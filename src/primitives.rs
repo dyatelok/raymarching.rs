@@ -41,4 +41,23 @@ impl Object3d for Rec {
     }
 }
 
-// impl
+pub struct Plane {
+    pos: Vec3,
+    norm: Vec3,
+}
+
+impl Plane {
+    #[allow(dead_code)]
+    pub fn from(pos: Vec3, norm: Vec3) -> Self {
+        Self {
+            pos,
+            norm: norm.normalize(),
+        }
+    }
+}
+
+impl Object3d for Plane {
+    fn get_dist(&self, pos: Vec3) -> f32 {
+        (pos - self.pos).dot(self.norm)
+    }
+}

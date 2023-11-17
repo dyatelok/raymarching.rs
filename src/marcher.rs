@@ -59,11 +59,10 @@ impl Marcher {
         self.cast_ray(ray)
     }
     fn dist(pos: Vec3) -> f32 {
+        let plane_dist = Plane::from(vec3![], vec3![0.0, 0.0, 1.0]).get_dist(pos);
         let sphere_dist = Sphere::from(vec3![], 1.0).get_dist(pos);
-        // let rec_dist = Rec::from(vec3![], vec3![1.5]).get_dist(pos);
-        // rec_dist.max(-sphere_dist)
-
-        sphere_dist + (pos.x * 20.0).sin() * 0.25
+        let rec_dist = Rec::from(vec3![], vec3![1.5]).get_dist(pos);
+        smooth_union(smooth_union(rec_dist, sphere_dist, 0.5), plane_dist, 0.5)
     }
     fn normal(pos: Vec3) -> Vec3 {
         const STEP: f32 = MIN_DISTANCE;
