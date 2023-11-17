@@ -9,7 +9,7 @@ use crate::utils::*;
 
 const ITERATIONS_LIMIT: usize = 32;
 const MAX_DISTANCE: f32 = 100.0;
-const MIN_DISTANCE: f32 = 0.001;
+const MIN_DISTANCE: f32 = 0.0005;
 const RAYS_PER_PIXEL_SQRT: usize = 1;
 
 pub struct Marcher {
@@ -60,15 +60,15 @@ impl Marcher {
         self.cast_ray(ray)
     }
     fn dist(pos: Vec3) -> f32 {
-        // const MUL1: f32 = 5.0;
-        // const MUL2: f32 = 0.25;
-        // let displacement =
-        // (MUL1 * pos.x).sin() * (MUL1 * pos.y).sin() * (MUL1 * pos.z).sin() * MUL2;
+        const MUL1: f32 = 5.0;
+        const MUL2: f32 = 0.25;
+        let displacement =
+            (MUL1 * pos.x).sin() * (MUL1 * pos.y).sin() * (MUL1 * pos.z).sin() * MUL2;
         let sphere_dist = Sphere::from(vec3![], 1.0, Color::RED).get_dist(pos);
-        sphere_dist // + displacement
+        sphere_dist + displacement
     }
     fn normal(pos: Vec3) -> Vec3 {
-        const STEP: f32 = 0.01;
+        const STEP: f32 = 0.001;
         let step_x: Vec3 = vec3![STEP, 0.0, 0.0];
         let step_y: Vec3 = vec3![0.0, STEP, 0.0];
         let step_z: Vec3 = vec3![0.0, 0.0, STEP];
@@ -80,7 +80,7 @@ impl Marcher {
         vec3![gradient_x, gradient_y, gradient_z].normalize()
     }
     fn cast_ray(&self, mut ray: Ray) -> Color {
-        let light_pos = vec3![2.0, 5.0, 5.0];
+        let light_pos = vec3![2.0, 5.0, -5.0];
         for _ in 0..ITERATIONS_LIMIT {
             let dist = Self::dist(ray.pos);
 
@@ -96,9 +96,8 @@ impl Marcher {
                 break;
             }
 
-            ray.pos += ray.dir * dist;
+            ray.pos += ray.dir * dist * 0.99;
         }
         Color::BLACK
     }
 }
-
