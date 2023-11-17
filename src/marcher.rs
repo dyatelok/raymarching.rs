@@ -1,5 +1,4 @@
-use euler::{vec3, Vec3};
-// use rand::prelude::*;
+use crate::math::{vec3, Vec3};
 use rayon::prelude::*;
 
 use crate::color::*;
@@ -7,10 +6,10 @@ use crate::primitives::*;
 use crate::scene::{construct_camera, SKY_COLOR};
 use crate::utils::*;
 
-const ITERATIONS_LIMIT: usize = 32;
-const MAX_DISTANCE: f32 = 100.0;
-const MIN_DISTANCE: f32 = 0.0005;
-const RAYS_PER_PIXEL_SQRT: usize = 1;
+const ITERATIONS_LIMIT: usize = 100;
+const MAX_DISTANCE: f32 = 5.0;
+const MIN_DISTANCE: f32 = 0.001;
+const RAYS_PER_PIXEL_SQRT: usize = 2;
 
 pub struct Marcher {
     side: usize,
@@ -60,15 +59,14 @@ impl Marcher {
         self.cast_ray(ray)
     }
     fn dist(pos: Vec3) -> f32 {
-        const MUL1: f32 = 5.0;
-        const MUL2: f32 = 0.25;
-        let displacement =
-            (MUL1 * pos.x).sin() * (MUL1 * pos.y).sin() * (MUL1 * pos.z).sin() * MUL2;
-        let sphere_dist = Sphere::from(vec3![], 1.0, Color::RED).get_dist(pos);
-        sphere_dist + displacement
+        let sphere_dist = Sphere::from(vec3![], 1.0).get_dist(pos);
+        // let rec_dist = Rec::from(vec3![], vec3![1.5]).get_dist(pos);
+        // rec_dist.max(-sphere_dist)
+
+        sphere_dist + (pos.x * 20.0).sin() * 0.25
     }
     fn normal(pos: Vec3) -> Vec3 {
-        const STEP: f32 = 0.001;
+        const STEP: f32 = MIN_DISTANCE;
         let step_x: Vec3 = vec3![STEP, 0.0, 0.0];
         let step_y: Vec3 = vec3![0.0, STEP, 0.0];
         let step_z: Vec3 = vec3![0.0, 0.0, STEP];
@@ -89,15 +87,19 @@ impl Marcher {
                 let dir_to_light: Vec3 = (ray.pos - light_pos).normalize();
                 let intersity = norm.dot(dir_to_light).max(0.1);
 
-                return Color::RED * intersity;
+                return Color::WHITE * intersity;
             }
 
             if dist > MAX_DISTANCE {
-                break;
+                return SKY_COLOR;
             }
 
-            ray.pos += ray.dir * dist * 0.99;
+            ray.pos += ray.dir * dist;
         }
-        Color::BLACK
+        let norm = Self::normal(ray.pos);
+        let dir_to_light: Vec3 = (ray.pos - light_pos).normalize();
+        let intersity = norm.dot(dir_to_light).max(0.1);
+
+        return Color::WHITE * intersity;
     }
 }

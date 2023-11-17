@@ -9,6 +9,7 @@ use winit::{
 use winit_input_helper::WinitInputHelper;
 
 mod color;
+mod math;
 mod primitives;
 mod scene;
 mod utils;

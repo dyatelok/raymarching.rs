@@ -109,4 +109,3 @@ impl Color {
     pub const MAGENTA: Color = Color([255.0 / 255.0, 0.0 / 255.0, 255.0 / 255.0, 255.0 / 255.0]);
     pub const RAYWHITE: Color = Color([245.0 / 255.0, 245.0 / 255.0, 245.0 / 255.0, 255.0 / 255.0]);
 }
-

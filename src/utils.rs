@@ -1,4 +1,4 @@
-use euler::{vec3, Vec3};
+use crate::math::{vec3, Vec3};
 
 pub struct Camera {
     pos: Vec3,
@@ -42,4 +42,3 @@ impl Ray {
         Self { pos, dir }
     }
 }
-
